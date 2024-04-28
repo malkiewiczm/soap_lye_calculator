@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Soap Lye Calculator</title>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+	<script src="main.js"></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<h1>Soap Lye Calculator</h1>
+	<button class="small-margin-left" id="show-readme-btn">Show/Hide Info</button>
+	<div id="readme-box">
+		Insert README here.
+	</div>
+	<form action="javascript:void(0);">
+		<fieldset>
+			<legend>Lye Type</legend>
+			<div>
+				<label>
+					<input id="lye_naoh" name="lye" type="radio">
+					Sodium hydroxide (NaOH)
+				</label>
+			</div>
+			<div>
+				<label>
+					<input id="lye_koh" name="lye" type="radio">
+					Potassium hydroxide (KOH)
+				</label>
+			</div>
+			<div>
+				<label>
+					<input id="dual_lye" name="lye" type="radio">
+					Dual Lye (Mixture of NaOH and KOH)
+				</label>
+			</div>
+			<div class="fake-table">
+				<div class="fake-tr">
+					<label class="fake-td">
+						<input id="naoh_part" type="text" class="text_input">
+						NaOH part / percent
+					</label>
+					<label class="fake-td">
+						<input id="naoh_purity" type="text" class="text_input">
+						NaOH purity percent
+					</label>
+				</div>
+				<div class="fake-tr">
+					<label class="fake-td">
+						<input id="koh_part" type="text" class="text_input">
+						KOH part / percent
+					</label>
+					<label class="fake-td">
+						<input id="koh_purity" type="text" class="text_input">
+						KOH purity percent
+					</label>
+				</div>
+			</div>
+			<div class="small-margin-top">NaOH percent: <span id="naoh_percent_info">--</span>; Multiplier accounting
+				for purity: <span id="naoh_multiplier_info">--</span></div>
+			<div class="small-margin-top">KOH percent: <span id="koh_percent_info">--</span>; Multiplier accounting for
+				purity: <span id="koh_multiplier_info">--</span></div>
+		</fieldset>
+		<fieldset>
+			<legend>Oil weight</legend>
+			<div>
+				<label>
+					<input id="oil_weight" type="text" class="text_input">
+					Oil weight
+				</label>
+				<p>
+					Provide the total oil weight if the recipe is percent or ratio based, otherwise this will be
+					summed from the recipe.
+				</p>
+				<div>
+					Total oil weight: <span id="oil_weight_info">--</span>
+				</div>
+				<div class="small-margin-top">
+					<button id="convert_to_percent_based_recipe_btn" type="button">Convert Inputs to Percents</button>
+					<button id="convert_to_weight_based_recipe_btn" type="button">Convert Inputs to Weights</button>
+				</div>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Water</legend>
+			<div>
+				<label>
+					<input id="lye_solution_percent" type="text" class="text_input">
+					Lye solution concetration percentage (by weight)
+				</label>
+			</div>
+			<div>
+				or
+			</div>
+			<div>
+				<label>
+					<input id="lye_ratio" type="text" class="text_input">
+					Water : lye ratio (by weight)
+				</label>
+			</div>
+			<div>
+				or
+			</div>
+			<div>
+				<label>
+					<input id="water_percent_of_oil" type="text" class="text_input">
+					Water as a percent of oil
+				</label>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Super fat</legend>
+			<div>
+				<div class="small-margin-bottom">
+					<label>
+						<input id="super_fat_percent" type="text" class="text_input">
+						Super fat percent
+					</label>
+				</div>
+				<div class="small-margin-bottom">
+					or
+				</div>
+				<div class="small-margin-bottom">
+					<label>
+						<input id="lye_discount_percent" type="text" class="text_input">
+						Lye discount percent
+					</label>
+				</div>
+				<div>Lye multiplier: <span id="lye_multiplier_info">--</span></div>
+				<p>
+					The recipe will use <span id="super_fat_percent_info">X</span>% more oil than would be necessary for
+					a complete reaction.
+				</p>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Oils</legend>
+			<div>Current recipe:</div>
+			<div>
+				<table>
+					<thead>
+						<tr>
+							<th>Remove</th>
+							<th>Oil</th>
+							<th>Weight / Part / Percent</th>
+							<th>Percent</th>
+							<th>Weight</th>
+						</tr>
+					</thead>
+					<tbody id="recipe_oils_table_body"></tbody>
+				</table>
+			</div>
+			<div>Required water and lye:</div>
+			<div>
+				<table>
+					<thead>
+						<tr>
+							<th>Water Weight</th>
+							<th id="header_required_naoh_info">Sodium Hydroxide (NaOH) Weight</th>
+							<th id="header_required_koh_info">Potassium Hydroxide (KOH) Weight</th>
+							<th>Total Weight of Solution</th>
+							<th>Total Weight of Ingredients</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td id="required_water_info">--</td>
+							<td id="required_naoh_info">--</td>
+							<td id="required_koh_info">--</td>
+							<td id="water_lye_sum_info">--</td>
+							<td id="oil_water_lye_sum_info">--</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div>Current recipe properties:</div>
+			<div>
+				<table>
+					<thead>
+						<tr>
+							<th>Hard</th>
+							<th>Cleansing</th>
+							<th>Bubbly</th>
+							<th>Conditioning</th>
+							<th>Creamy</th>
+							<th>Iodine</th>
+							<th>INS</th>
+							<th>Lauric</th>
+							<th>Myristic</th>
+							<th>Palmitic</th>
+							<th>Stearic</th>
+							<th>Ricinoleic</th>
+							<th>Oleic</th>
+							<th>Linoleic</th>
+							<th>Linolenic</th>
+							<th>Saturated</th>
+							<th>Mono Unsaturated</th>
+							<th>Poly Unsaturated</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td id="recipe_hard_info">--</td>
+							<td id="recipe_cleansing_info">--</td>
+							<td id="recipe_bubbly_info">--</td>
+							<td id="recipe_conditioning_info">--</td>
+							<td id="recipe_creamy_info">--</td>
+							<td id="recipe_iodine_info">--</td>
+							<td id="recipe_ins_info">--</td>
+							<td id="recipe_lauric_info">--</td>
+							<td id="recipe_myristic_info">--</td>
+							<td id="recipe_palmitic_info">--</td>
+							<td id="recipe_stearic_info">--</td>
+							<td id="recipe_ricinoleic_info">--</td>
+							<td id="recipe_oleic_info">--</td>
+							<td id="recipe_linoleic_info">--</td>
+							<td id="recipe_linolenic_info">--</td>
+							<td id="recipe_saturated_info">--</td>
+							<td id="recipe_mono_unsaturated_info">--</td>
+							<td id="recipe_poly_unsaturated_info">--</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div>
+				<canvas id="recipe_graph_canvas"></canvas>
+			</div>
+			<div>
+				All oils:
+			</div>
+			<div>
+				<label>Search: <input type="text" id="oil_search_bar"></label>
+				<button id="clear_search_btn" type="button">Clear Search</button>
+				<span id="filter_info_text"></span>
+			</div>
+			<div>
+				<table>
+					<thead>
+						<tr>
+							<th>Add</th>
+							<th id="th_name" class="cursor">Name</th>
+							<th id="th_sap_naoh" class="cursor">sap NaOH</th>
+							<th id="th_sap_koh" class="cursor">sap KOH</th>
+							<th id="th_hard" class="cursor">Hard</th>
+							<th id="th_cleansing" class="cursor">Cleansing</th>
+							<th id="th_bubbly" class="cursor">Bubbly</th>
+							<th id="th_conditioning" class="cursor">Conditioning</th>
+							<th id="th_creamy" class="cursor">Creamy</th>
+							<th id="th_iodine" class="cursor">Iodine</th>
+							<th id="th_ins" class="cursor">INS</th>
+							<th id="th_lauric" class="cursor">Lauric</th>
+							<th id="th_myristic" class="cursor">Myristic</th>
+							<th id="th_palmitic" class="cursor">Palmitic</th>
+							<th id="th_stearic" class="cursor">Stearic</th>
+							<th id="th_ricinoleic" class="cursor">Ricinoleic</th>
+							<th id="th_oleic" class="cursor">Oleic</th>
+							<th id="th_linoleic" class="cursor">Linoleic</th>
+							<th id="th_linolenic" class="cursor">Linolenic</th>
+							<th id="th_saturated" class="cursor">Saturated</th>
+							<th id="th_mono_unsaturated" class="cursor">Mono Unsaturated</th>
+							<th id="th_poly_unsaturated" class="cursor">Poly Unsaturated</th>
+							<th>Find Similar Oils</th>
+							<th>Similarity Score</th>
+						</tr>
+					</thead>
+					<tbody id="all_oils_table_body"></tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Reset</legend>
+			<div>
+				<button id="reset_btn" type="button">Reset</button>
+				<button id="undo_reset_btn" type="button">Undo Reset</button>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Import and Export</legend>
+			<div class="small-margin-bottom">
+				<input id="import_recipe" type="text" class="text_input">
+				<button id="import_recipe_btn" type="button">Import Recipe</button>
+			</div>
+			<div id="import_recipe_feedback" class="small-margin-bottom"></div>
+			<div class="small-margin-bottom">Exported recipe:</div>
+			<div id="export_recipe_json"></div>
+		</fieldset>
+	</form>
+</body>
+
+</html>
