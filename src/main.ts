@@ -43,6 +43,7 @@ interface Inputs {
 	water: number;
 	water_mode: WaterMode;
 	super_fat: number;
+	additive: number;
 	oil_list: number[];
 	oil_parts: number[];
 }
@@ -59,6 +60,7 @@ window.addEventListener('load', () => {
 			water: 2.0,
 			water_mode: WaterMode.Ratio,
 			super_fat: 0.05,
+			additive: 0.0,
 			oil_list: [],
 			oil_parts: [],
 		};
@@ -89,6 +91,9 @@ window.addEventListener('load', () => {
 	let lye_solution_percent_input = by_id('lye_solution_percent') as HTMLInputElement;
 	let lye_ratio_input = by_id('lye_ratio') as HTMLInputElement;
 	let water_percent_of_oil_input = by_id('water_percent_of_oil') as HTMLInputElement;
+	let additive_percent_input = by_id('additive_percent') as HTMLInputElement;
+	let additive_oz_lb_input = by_id('additive_oz_lb') as HTMLInputElement;
+	let additive_g_kg_input = by_id('additive_g_kg') as HTMLInputElement;
 	let super_fat_percent_input = by_id('super_fat_percent') as HTMLInputElement;
 	let lye_discount_percent_input = by_id('lye_discount_percent') as HTMLInputElement;
 	let convert_to_percent_based_recipe_btn = by_id('convert_to_percent_based_recipe_btn') as HTMLButtonElement;
@@ -341,6 +346,27 @@ window.addEventListener('load', () => {
 		inputs.water_mode = WaterMode.PercentOfOil;
 		return true;
 	});
+	generic_input_parse(additive_percent_input, (value) => {
+		if (value < 0) {
+			return false;
+		}
+		inputs.additive = value / 100.0;
+		return true;
+	});
+	generic_input_parse(additive_oz_lb_input, (value) => {
+		if (value < 0) {
+			return false;
+		}
+		inputs.additive = value / 16.0;
+		return true;
+	});
+	generic_input_parse(additive_g_kg_input, (value) => {
+		if (value < 0) {
+			return false;
+		}
+		inputs.additive = value / 1000.0;
+		return true;
+	});
 	generic_input_parse(super_fat_percent_input, (value) => {
 		inputs.super_fat = value / 100.0;
 		return true;
@@ -537,7 +563,6 @@ window.addEventListener('load', () => {
 			const COLOR_BG_ALT = '#b1c8dd';
 			const COLOR_IDEAL = '#ceb1dd';
 			const COLOR_SPIKE = '#000000';
-			const COLOR_ACTUAL = '#fcb205';
 			const COLOR_HATCH = '#000000';
 			const TEXT_PAD = 100;
 			const TEXT_LEFT_MARGIN = 10;
@@ -563,8 +588,6 @@ window.addEventListener('load', () => {
 				ctx.fillStyle = COLOR_SPIKE;
 				add_spike(ctx, x + clamp(spike, 0, 100) * MULT, y, SPIKE_WIDTH, HEIGHT);
 			});
-			// ctx.fillStyle = COLOR_ACTUAL;
-			// add_spike(ctx, x + clamp(actual, 0, 100) * MULT, y, SPIKE_WIDTH, HEIGHT);
 			ctx.strokeStyle = COLOR_HATCH;
 			add_hatches(ctx, x, y, clamp(actual, 0, 100) * MULT, HEIGHT);
 		}
@@ -632,6 +655,16 @@ window.addEventListener('load', () => {
 		lye_ratio_input.style.backgroundColor = '';
 		water_percent_of_oil_input.style.backgroundColor = '';
 
+		additive_percent_input.value = (inputs.additive * 100.0).toString();
+		additive_oz_lb_input.value = (inputs.additive * 16.0).toString();
+		additive_g_kg_input.value = (inputs.additive * 1000.0).toString();
+		additive_percent_input.style.backgroundColor = '';
+		additive_oz_lb_input.style.backgroundColor = '';
+		additive_g_kg_input.style.backgroundColor = '';
+		by_id('header_required_additive_info').style.display = (inputs.additive == 0) ? 'none' : '';
+		by_id('required_additive_info').style.display = (inputs.additive == 0) ? 'none' : '';
+		const sum_of_additive = inputs.additive * sum_of_oil;
+
 		let total_tr = append_element(recipe_oils_table_body, 'tr', '');
 		total_tr.style.backgroundColor = '#d5daea';
 		append_element(total_tr, 'td', '');
@@ -650,7 +683,8 @@ window.addEventListener('load', () => {
 		by_id('required_naoh_info').innerText = round3(sum_of_naoh).toString();
 		by_id('required_koh_info').innerText = round3(sum_of_koh).toString();
 		by_id('water_lye_sum_info').innerText = round3(sum_of_water + sum_of_lye).toString();
-		by_id('oil_water_lye_sum_info').innerText = round3(sum_of_oil + sum_of_water + sum_of_lye).toString();
+		by_id('required_additive_info').innerText = round3(sum_of_additive).toString();
+		by_id('oil_water_lye_sum_info').innerText = round3(sum_of_oil + sum_of_water + sum_of_lye + sum_of_additive).toString();
 		by_id('recipe_hard_info').innerText = round3(recipe_hard).toString();
 		by_id('recipe_cleansing_info').innerText = round3(recipe_cleansing).toString();
 		by_id('recipe_bubbly_info').innerText = round3(recipe_bubbly).toString();

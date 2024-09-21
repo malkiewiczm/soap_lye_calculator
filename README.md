@@ -31,13 +31,11 @@ taking on the latter definition but it made more sense to me this way.
 
 **Q:** Why is there no "water discount" field?
 
-**A:** Water discount doesn't make that much sense to me. If the
-intended purpose is to use less water in the recipe, then just enter a
-higher lye concetration.
-
-**Q:** Why is there no field for fragrance or additives?
-
-**A:** IDK
+**A:** Water discount as a percent doesn't make that much sense to
+me. What is it a percentage of? Online the consensus seems to be it is
+just a percentage of the default of the calculator. In my opinion, if
+the intended purpose is to use less water in the recipe then it is
+better to be explicit and enter a higher lye concetration.
 
 **Q:** What units are the weights in?
 
